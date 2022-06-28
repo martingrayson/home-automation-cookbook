@@ -98,7 +98,6 @@ As the ambient relative humidity changes based on the [season among other factor
 I modelled this using a template sensor and automation (omitted as its super simple):
 
 ```yaml
-
 - platform: template
   sensors:
     bathroom_humidity_difference:
