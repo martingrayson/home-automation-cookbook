@@ -1,5 +1,13 @@
 # Humidity Triggered Extractor Fan
 
+### Table of Contents
+  * [Background](#background)
+  * [Why?](#why-)
+  * [Implementation](#implementation)
+    + [Manual Triggering](#manual-triggering)
+    + [Adjacent Room Humidity Difference Trigger](#adjacent-room-humidity-difference-trigger)
+    + [Humidity Derivative Trigger](#humidity-derivative-trigger)
+
 ## Background
 
 When refurbishing my bathroom, I installed an [in-line extractor fan](https://www.screwfix.com/p/manrose-mf100t-100mm-axial-inline-extractor-fan-with-timer-240v/719gy) in the loft space. This extracts humid air from the shower cubicle via a discrete ceiling mounted vent.
