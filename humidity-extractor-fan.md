@@ -121,7 +121,9 @@ To accurately calculate the rate of humidity change (the derivative), I relocate
 The logical way to calculate this humidity derivative was to use the [Home Assistant Derivative Helper](https://www.home-assistant.io/integrations/derivative/), as per the manual:
 > The derivative integration creates a sensor that estimates the derivative of the values provided by another sensor (the source sensor). Derivative sensors are updated upon changes of the source sensor.
 
-![Relative humidity in a typical day](images/humidity_over_time.png | width=500)
+| ![Relative humidity in a typical day](images/humidity_over_time.png) |
+|:--:|
+| _The bathroom's relative humidity over a typical day, notice the two spikes when the shower was used._ |
 
 It's implementation as a sensor:
 
@@ -133,8 +135,11 @@ It's implementation as a sensor:
   time_window: "00:05:00" 
   unit_time: min
 ```
+Notice the use of the [`time_window`](https://www.home-assistant.io/integrations/derivative/#time-window) parameter to filter out any noise using a rolling 5 minute average.
 
-![Humidity derivative sensor in a typical day](images/humidity_change.png | width=500)
+| ![Humidity derivative sensor in a typical day](images/humidity_change.png) |
+|:--:|
+| _The humidity derivative sensor over the same period._ |
 
 I combined this with a binary sensor to translate this differential into a binary trigger. This will trigger the extractor when the derivative sensor detects a rate of change greater than 1.5% per minute.
 
