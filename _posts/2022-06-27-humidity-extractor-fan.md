@@ -1,13 +1,11 @@
-# Humidity Triggered Extractor Fan
-
-## Table of Contents
-
-* [Background](#background)
-* [Purpose](#purpose)
-* [Implementation](#implementation)
-  * [Manual Triggering](#manual-triggering)
-  * [Adjacent Room Humidity Difference Trigger](#adjacent-room-humidity-difference-trigger)
-  * [Humidity Derivative Trigger](#humidity-derivative-trigger)
+---
+layout: post
+title: "Humidity Triggered Extractor Fan"
+tags: extractor fan bathroom automation sonoff 
+permalink: /extractor-fan/
+---
+* Do not remove this line (it will not be displayed)
+{:toc}
 
 ## Background
 
@@ -100,6 +98,7 @@ As the ambient relative humidity changes based on the [season among other factor
 I modelled this using a template sensor and automation (omitted as its super simple):
 
 ```yaml
+
 - platform: template
   sensors:
     bathroom_humidity_difference:
@@ -130,7 +129,7 @@ To accurately calculate the rate of humidity change (the derivative), I relocate
 The logical way to calculate this humidity derivative was to use the [Home Assistant Derivative Helper](https://www.home-assistant.io/integrations/derivative/), as per the manual:
 > The derivative integration creates a sensor that estimates the derivative of the values provided by another sensor (the source sensor). Derivative sensors are updated upon changes of the source sensor.
 
-| ![Relative humidity in a typical day](images/humidity_over_time.png) |
+| ![Relative humidity in a typical day](/images/humidity_over_time.png) |
 |:--:|
 | _The bathroom's relative humidity over a typical day, notice the two spikes when the shower was used._ |
 
@@ -146,7 +145,7 @@ It's implementation as a sensor:
 ```
 Notice the use of the [`time_window`](https://www.home-assistant.io/integrations/derivative/#time-window) parameter to filter out any noise using a rolling 5 minute average.
 
-| ![Humidity derivative sensor in a typical day](images/humidity_change.png) |
+| ![Humidity derivative sensor in a typical day](/images/humidity_change.png) |
 |:--:|
 | _The humidity derivative sensor over the same period._ |
 

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-06-28T12:19:42+01:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Home Automation Cookbook</title><subtitle>Useful automations and configuration for Home Assistant</subtitle><entry><title type="html">Humidity Triggered Extractor Fan</title><link href="http://localhost:4000/extractor-fan/" rel="alternate" type="text/html" title="Humidity Triggered Extractor Fan" /><published>2022-06-27T00:00:00+01:00</published><updated>2022-06-27T00:00:00+01:00</updated><id>http://localhost:4000/humidity-extractor-fan</id><content type="html" xml:base="http://localhost:4000/extractor-fan/"><![CDATA[<ul id="markdown-toc">
+  <li><a href="#background" id="markdown-toc-background">Background</a></li>
+  <li><a href="#purpose" id="markdown-toc-purpose">Purpose</a></li>
+  <li><a href="#implementation" id="markdown-toc-implementation">Implementation</a>    <ul>
+      <li><a href="#manual-triggering" id="markdown-toc-manual-triggering">Manual Triggering</a></li>
+      <li><a href="#adjacent-room-humidity-difference-trigger" id="markdown-toc-adjacent-room-humidity-difference-trigger">Adjacent Room Humidity Difference Trigger</a></li>
+      <li><a href="#humidity-derivative-trigger" id="markdown-toc-humidity-derivative-trigger">Humidity Derivative Trigger</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="background">Background</h2>
+
+<p>When refurbishing my bathroom, I installed an <a href="https://www.screwfix.com/p/manrose-mf100t-100mm-axial-inline-extractor-fan-with-timer-240v/719gy">in-line extractor fan</a> in the loft space. This extracts humid air from the shower cubicle via a discrete ceiling mounted vent.</p>
+
+<p>The extractor is controlled via a <a href="https://sonoff.tech/product/diy-smart-switch/basiczbr3/">Sonoff Basic ZBR3</a>, a Zigbee relay that is made visible in <a href="https://www.home-assistant.io/">Home Assistant</a>. I also have a temperature and humidity sensor in the room, a <a href="https://sonoff.tech/product/smart-home-security/snzb-02/">Sonoff SNZB-02</a>.</p>
+
+<p>This documents the how and why of my smart bathroom.</p>
+
+<h2 id="purpose">Purpose</h2>
+
+<p><em>Why did I make my bathroom extractor smart?</em></p>
+
+<p>My bathroom is fitted with <a href="https://www.philips-hue.com/en-gb/p/hue-white-and-colour-ambiance-3-pack-gu10/8719514342767">Hue downlights</a> and a <a href="https://www.philips-hue.com/en-gb/p/hue-dimmer-switch--latest-model-/8719514274617">Hue Dimmer</a> so that I can use various scenes depending on the situation. Lighting is motion controlled for the most part and scene selection depends on the time of day. At night a twilight scene is activated to make nighttime trips to the bathroom less abrupt.</p>
+
+<p>As my lights are smart and I have no physical dumb switch (a pull cord switch is common in UK bathrooms), I was unable to simply activate the extractor using the switched live of a switch. I also don’t think its very ergonomic to activate the extractor for every use of the bathroom since we’re not always producing humidity.</p>
+
+<p>This led me to search for humidity sensing extractors. I couldn’t find many, and the ones that I did find were not inline (i.e. they couldn’t be kept out of sight in the loft space and were not as powerful). Being the detail oriented person that I am, a bulky <a href="https://www.screwfix.com/p/xpelair-dx100hts-100mm-axial-bathroom-extractor-fan-with-humidistat-timer-white-220-240v/8578h">ceiling mounted humidistat controlled extractor</a> wasn’t going to cut it.</p>
+
+<p>This led me to install a smart relay and figure out the automation at a later point.</p>
+
+<h2 id="implementation">Implementation</h2>
+
+<p>Implementation of my bathroom extractor evolved over time and as I was actually tiling, painting and plumbing the room myself, I didn’t have a whole lot of upfront experimentation time. The below documents how the system evolved over the course of a year.</p>
+
+<h3 id="manual-triggering">Manual Triggering</h3>
+
+<p>Version one of my smart extractor wasn’t really smart. I simply used the long-press event of a <a href="https://www.philips-hue.com/en-gb/p/hue-dimmer-switch--latest-model-/8719514274617">Hue Dimmer</a> to turn on the Sonoff and activate the extractor. The automation for this can be seen below</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="pi">-</span> <span class="na">id</span><span class="pi">:</span> <span class="s">bathroom_switch</span>
+  <span class="na">alias</span><span class="pi">:</span> <span class="s">Bathroom - Switch</span>
+  <span class="na">description</span><span class="pi">:</span> <span class="s">Manual control of things via the bathroom switch</span>
+  <span class="na">trigger</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">event</span>
+    <span class="na">event_type</span><span class="pi">:</span> <span class="s">deconz_event</span>
+    <span class="na">event_data</span><span class="pi">:</span>
+      <span class="na">event</span><span class="pi">:</span> <span class="m">1001</span>
+      <span class="na">id</span><span class="pi">:</span> <span class="s">bathroom_remote</span>
+    <span class="na">id</span><span class="pi">:</span> <span class="s">bathroom_switch_on_long_hold</span>
+  <span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">event</span>
+    <span class="na">event_type</span><span class="pi">:</span> <span class="s">deconz_event</span>
+    <span class="na">event_data</span><span class="pi">:</span>
+      <span class="na">event</span><span class="pi">:</span> <span class="m">4001</span>
+      <span class="na">id</span><span class="pi">:</span> <span class="s">bathroom_remote</span>
+    <span class="na">id</span><span class="pi">:</span> <span class="s">bathroom_switch_off_long_hold</span>
+  <span class="na">condition</span><span class="pi">:</span> <span class="pi">[]</span>
+  <span class="na">action</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">choose</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">conditions</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">condition</span><span class="pi">:</span> <span class="s">trigger</span>
+        <span class="na">id</span><span class="pi">:</span> <span class="s">bathroom_switch_on_long_hold</span>
+      <span class="na">sequence</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">scene</span><span class="pi">:</span> <span class="s">scene.bathroom_day_mode</span>
+      <span class="pi">-</span> <span class="na">service</span><span class="pi">:</span> <span class="s">switch.turn_on</span>
+        <span class="na">data</span><span class="pi">:</span> <span class="pi">{}</span>
+        <span class="na">target</span><span class="pi">:</span>
+          <span class="na">entity_id</span><span class="pi">:</span> <span class="s">switch.bathroom_extractor</span>
+      <span class="pi">-</span> <span class="na">delay</span><span class="pi">:</span>
+          <span class="na">hours</span><span class="pi">:</span> <span class="m">0</span>
+          <span class="na">minutes</span><span class="pi">:</span> <span class="m">45</span>
+          <span class="na">seconds</span><span class="pi">:</span> <span class="m">0</span>
+          <span class="na">milliseconds</span><span class="pi">:</span> <span class="m">0</span>
+      <span class="pi">-</span> <span class="na">service</span><span class="pi">:</span> <span class="s">switch.turn_off</span>
+        <span class="na">data</span><span class="pi">:</span> <span class="pi">{}</span>
+        <span class="na">target</span><span class="pi">:</span>
+          <span class="na">entity_id</span><span class="pi">:</span> <span class="s">switch.bathroom_extractor</span>
+    <span class="pi">-</span> <span class="na">conditions</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">condition</span><span class="pi">:</span> <span class="s">trigger</span>
+        <span class="na">id</span><span class="pi">:</span> <span class="s">bathroom_switch_off_long_hold</span>
+      <span class="na">sequence</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">service</span><span class="pi">:</span> <span class="s">switch.turn_off</span>
+        <span class="na">data</span><span class="pi">:</span> <span class="pi">{}</span>
+        <span class="na">target</span><span class="pi">:</span>
+          <span class="na">entity_id</span><span class="pi">:</span> <span class="s">switch.bathroom_extractor</span>
+      <span class="pi">-</span> <span class="na">service</span><span class="pi">:</span> <span class="s">scene.turn_on</span>
+        <span class="na">target</span><span class="pi">:</span>
+          <span class="na">entity_id</span><span class="pi">:</span> <span class="s">scene.bathroom_off</span>
+        <span class="na">metadata</span><span class="pi">:</span> <span class="pi">{}</span>
+  <span class="na">mode</span><span class="pi">:</span> <span class="s">restart</span>
+</code></pre></div></div>
+<p>Note that I’m using <code class="language-plaintext highlighter-rouge">deconz</code>, the triggering events will look a little different if you’re using another platform.</p>
+
+<h3 id="adjacent-room-humidity-difference-trigger">Adjacent Room Humidity Difference Trigger</h3>
+
+<p>I wanted to automate the triggering of the extractor so that when the shower was turned on and the humidity rose, the extractor would automatically activate (and deactivate when the humidity dropped).</p>
+
+<p>As the ambient relative humidity changes based on the <a href="https://www.metoffice.gov.uk/weather/learn-about/weather/types-of-weather/humidity">season among other factors</a>, using an absolute relative humidity trigger wasn’t going to work. An ambient humidity of 60% may be normal in the summer but high in the winter. Due to this, I decided to compare the humidity of the bathroom to that of an adjacent room. If the humidity was <code class="language-plaintext highlighter-rouge">x%</code> above the adjacent room I would trigger the extractor.</p>
+
+<p>I modelled this using a template sensor and automation (omitted as its super simple):</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">template</span>
+  <span class="na">sensors</span><span class="pi">:</span>
+    <span class="na">bathroom_humidity_difference</span><span class="pi">:</span>
+      <span class="na">friendly_name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Bathroom</span><span class="nv"> </span><span class="s">Humidity</span><span class="nv"> </span><span class="s">Difference"</span>
+      <span class="na">value_template</span><span class="pi">:</span> <span class="s2">"</span><span class="s">"</span>
+      <span class="na">device_class</span><span class="pi">:</span> <span class="s2">"</span><span class="s">humidity"</span>
+      <span class="na">unit_of_measurement</span><span class="pi">:</span> <span class="s1">'</span><span class="s">%'</span>
+</code></pre></div></div>
+
+<p>This worked fine, but had a few drawbacks:</p>
+
+<ul>
+  <li>It was susceptible to sensors going offline (my Zigbee network has been temperamental). If the adjacent rooms sensor fell off the network, the template sensor wouldn’t function correctly.</li>
+  <li>It can also be influenced by high humidity activities in the adjacent room.</li>
+  <li>The trigger value needed to be adequately loose to account for errors in both the bathroom sensor reading and the adjacent rooms reading and so the automation wasn’t very responsive (<a href="https://www.geol.lsu.edu/jlorenzo/geophysics/uncertainties/Uncertaintiespart2.html#addsub">Propagation of Errors</a>).</li>
+</ul>
+
+<h3 id="humidity-derivative-trigger">Humidity Derivative Trigger</h3>
+
+<p>After experiencing the extractor either failing to trigger or triggering when it shouldn’t, I decided to investigate an alternative trigger that was less reliant on external factors.</p>
+
+<p>Logically, monitoring the rate of humidity change could be helpful here. If the humidity rapidly increased, we can assume the shower has been turned on and we should trigger the extractor to reduce the humidity. The advantages of this solution are:</p>
+
+<ul>
+  <li>No external sensors in adjacent rooms are required and so we’re not suspectable to hardware/network failures.</li>
+  <li>Seasonal ambient humidity changes do not need to be considered (i.e. we wont hardcode activation at <code class="language-plaintext highlighter-rouge">x%</code> humidity).</li>
+  <li>A trigger value could be much more precisely tuned and the extractor triggered sooner due to not combining the error of two sensors.</li>
+</ul>
+
+<p>To accurately calculate the rate of humidity change (the derivative), I relocated my sensor to sit above the shower head. This worked in my instance as my shower head is fairly large and so the sensor could be kept dry and out of sight.</p>
+
+<p>The logical way to calculate this humidity derivative was to use the <a href="https://www.home-assistant.io/integrations/derivative/">Home Assistant Derivative Helper</a>, as per the manual:</p>
+<blockquote>
+  <p>The derivative integration creates a sensor that estimates the derivative of the values provided by another sensor (the source sensor). Derivative sensors are updated upon changes of the source sensor.</p>
+</blockquote>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/images/humidity_over_time.png" alt="Relative humidity in a typical day" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><em>The bathroom’s relative humidity over a typical day, notice the two spikes when the shower was used.</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>It’s implementation as a sensor:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">derivative</span>
+  <span class="na">source</span><span class="pi">:</span> <span class="s">sensor.bathroom_humidity</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">Bathroom Humidity Change Per Minute</span>
+  <span class="na">round</span><span class="pi">:</span> <span class="m">2</span>
+  <span class="na">time_window</span><span class="pi">:</span> <span class="s2">"</span><span class="s">00:05:00"</span> 
+  <span class="na">unit_time</span><span class="pi">:</span> <span class="s">min</span>
+</code></pre></div></div>
+<p>Notice the use of the <a href="https://www.home-assistant.io/integrations/derivative/#time-window"><code class="language-plaintext highlighter-rouge">time_window</code></a> parameter to filter out any noise using a rolling 5 minute average.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/images/humidity_change.png" alt="Humidity derivative sensor in a typical day" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><em>The humidity derivative sensor over the same period.</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>I combined this with a binary sensor to translate this differential into a binary trigger. This will trigger the extractor when the derivative sensor detects a rate of change greater than 1.5% per minute.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">threshold</span>
+  <span class="na">entity_id</span><span class="pi">:</span> <span class="s">sensor.bathroom_humidity_change_per_minute</span>
+  <span class="na">upper</span><span class="pi">:</span> <span class="m">1.5</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">Bathroom Extractor Trigger</span>
+</code></pre></div></div>
+
+<p>The automation for this looks very similar to my original solution since the threshold sensor above can be used in a state trigger:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="pi">-</span> <span class="na">id</span><span class="pi">:</span> <span class="s">bathroom_extractor</span>
+  <span class="na">alias</span><span class="pi">:</span> <span class="s">Bathroom - Extractor</span>
+  <span class="na">trigger</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">state</span>
+    <span class="na">to</span><span class="pi">:</span> <span class="s1">'</span><span class="s">on'</span>
+    <span class="na">from</span><span class="pi">:</span> <span class="s1">'</span><span class="s">off'</span>
+    <span class="na">entity_id</span><span class="pi">:</span> <span class="s">binary_sensor.bathroom_extractor_trigger</span>
+    <span class="na">id</span><span class="pi">:</span> <span class="s">bathroom_humidity_high</span>
+</code></pre></div></div>
+
+<p><em>n.b. The rest of the automation has been omitted as it follows the same pattern as the original automation.</em></p>]]></content><author><name></name></author><category term="extractor" /><category term="fan" /><category term="bathroom" /><category term="automation" /><category term="sonoff" /></entry></feed>

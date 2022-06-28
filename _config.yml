@@ -1,4 +1,8 @@
 title: Home Automation Cookbook
 description: Useful automations and configuration for Home Assistant
-theme: jekyll-theme-slate
-author: martin-grayson 
+email: martin@mgrayson.co.uk
+github_username: martingrayson
+theme: minima
+
+plugins:
+  - jekyll-feed
