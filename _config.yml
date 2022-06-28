@@ -4,6 +4,7 @@ email: martin@mgrayson.co.uk
 github_username: martingrayson
 theme: minima
 baseurl: /home-automation-cookbook
+author: martin-grayson
 
 plugins:
   - jekyll-feed

@@ -3,6 +3,7 @@ layout: post
 title: "Humidity Triggered Extractor Fan"
 tags: extractor fan bathroom automation sonoff 
 permalink: /extractor-fan/
+author: martin-grayson
 ---
 * Do not remove this line (it will not be displayed)
 {:toc}
