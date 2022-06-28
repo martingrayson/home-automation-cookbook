@@ -1,12 +1,13 @@
 # Humidity Triggered Extractor Fan
 
-### Table of Contents
-  * [Background](#background)
-  * [Why?](#why-)
-  * [Implementation](#implementation)
-    + [Manual Triggering](#manual-triggering)
-    + [Adjacent Room Humidity Difference Trigger](#adjacent-room-humidity-difference-trigger)
-    + [Humidity Derivative Trigger](#humidity-derivative-trigger)
+## Table of Contents
+
+* [Background](#background)
+* [Purpose](#purpose)
+* [Implementation](#implementation)
+  * [Manual Triggering](#manual-triggering)
+  * [Adjacent Room Humidity Difference Trigger](#adjacent-room-humidity-difference-trigger)
+  * [Humidity Derivative Trigger](#humidity-derivative-trigger)
 
 ## Background
 
@@ -16,7 +17,7 @@ The extractor is controlled via a [Sonoff Basic ZBR3](https://sonoff.tech/produc
 
 This documents the how and why of my smart bathroom.
 
-## Why?
+## Purpose
 
 *Why did I make my bathroom extractor smart?*
 
@@ -171,4 +172,4 @@ The automation for this looks very similar to my original solution since the thr
     id: bathroom_humidity_high
 ```
 
-n.b. The rest of the automation has been omitted as it follows the same pattern as the original automation.
+*n.b. The rest of the automation has been omitted as it follows the same pattern as the original automation.*
