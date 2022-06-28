@@ -3,6 +3,7 @@ description: Useful automations and configuration for Home Assistant
 email: martin@mgrayson.co.uk
 github_username: martingrayson
 theme: minima
+baseurl: /home-automation-cookbook
 
 plugins:
   - jekyll-feed
