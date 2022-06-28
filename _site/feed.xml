@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-06-28T12:19:42+01:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Home Automation Cookbook</title><subtitle>Useful automations and configuration for Home Assistant</subtitle><entry><title type="html">Humidity Triggered Extractor Fan</title><link href="http://localhost:4000/extractor-fan/" rel="alternate" type="text/html" title="Humidity Triggered Extractor Fan" /><published>2022-06-27T00:00:00+01:00</published><updated>2022-06-27T00:00:00+01:00</updated><id>http://localhost:4000/humidity-extractor-fan</id><content type="html" xml:base="http://localhost:4000/extractor-fan/"><![CDATA[<ul id="markdown-toc">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-06-28T12:27:07+01:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Home Automation Cookbook</title><subtitle>Useful automations and configuration for Home Assistant</subtitle><entry><title type="html">Humidity Triggered Extractor Fan</title><link href="http://localhost:4000/extractor-fan/" rel="alternate" type="text/html" title="Humidity Triggered Extractor Fan" /><published>2022-06-27T00:00:00+01:00</published><updated>2022-06-27T00:00:00+01:00</updated><id>http://localhost:4000/humidity-extractor-fan</id><content type="html" xml:base="http://localhost:4000/extractor-fan/"><![CDATA[<ul id="markdown-toc">
   <li><a href="#background" id="markdown-toc-background">Background</a></li>
   <li><a href="#purpose" id="markdown-toc-purpose">Purpose</a></li>
   <li><a href="#implementation" id="markdown-toc-implementation">Implementation</a>    <ul>
@@ -138,7 +138,7 @@
 <table>
   <thead>
     <tr>
-      <th style="text-align: center"><img src="/images/humidity_over_time.png" alt="Relative humidity in a typical day" /></th>
+      <th style="text-align: center"><img src="/assets/humidity_over_time.png" alt="Relative humidity in a typical day" /></th>
     </tr>
   </thead>
   <tbody>
@@ -162,7 +162,7 @@
 <table>
   <thead>
     <tr>
-      <th style="text-align: center"><img src="/images/humidity_change.png" alt="Humidity derivative sensor in a typical day" /></th>
+      <th style="text-align: center"><img src="/assets/humidity_change.png" alt="Humidity derivative sensor in a typical day" /></th>
     </tr>
   </thead>
   <tbody>
