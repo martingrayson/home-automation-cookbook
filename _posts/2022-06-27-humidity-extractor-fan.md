@@ -5,6 +5,18 @@ tags: extractor fan bathroom automation sonoff
 permalink: /extractor-fan/
 author: martin-grayson
 ---
+<style>
+  table.mbtablestyle td {
+    border: none;
+    text-align: center;
+    background-color: white;
+    font-style: italic;
+    color: #828282;
+  }
+   table.mbtablestyle {
+    border: none;
+  }
+</style>
 * Do not remove this line (it will not be displayed)
 {:toc}
 
@@ -88,6 +100,7 @@ Version one of my smart extractor wasn't really smart. I simply used the long-pr
         metadata: {}
   mode: restart
 ```
+
 Note that I'm using `deconz`, the triggering events will look a little different if you're using another platform.
 
 ### Adjacent Room Humidity Difference Trigger
@@ -110,9 +123,9 @@ I modelled this using a template sensor and automation (omitted as its super sim
 
 This worked fine, but had a few drawbacks:
 
-- It was susceptible to sensors going offline (my Zigbee network has been temperamental). If the adjacent rooms sensor fell off the network, the template sensor wouldn't function correctly. 
-- It can also be influenced by high humidity activities in the adjacent room.
-- The trigger value needed to be adequately loose to account for errors in both the bathroom sensor reading and the adjacent rooms reading and so the automation wasn't very responsive ([Propagation of Errors](https://www.geol.lsu.edu/jlorenzo/geophysics/uncertainties/Uncertaintiespart2.html#addsub)).
+* It was susceptible to sensors going offline (my Zigbee network has been temperamental). If the adjacent rooms sensor fell off the network, the template sensor wouldn't function correctly.
+* It can also be influenced by high humidity activities in the adjacent room.
+* The trigger value needed to be adequately loose to account for errors in both the bathroom sensor reading and the adjacent rooms reading and so the automation wasn't very responsive ([Propagation of Errors](https://www.geol.lsu.edu/jlorenzo/geophysics/uncertainties/Uncertaintiespart2.html#addsub)).
 
 ### Humidity Derivative Trigger
 
@@ -120,19 +133,22 @@ After experiencing the extractor either failing to trigger or triggering when it
 
 Logically, monitoring the rate of humidity change could be helpful here. If the humidity rapidly increased, we can assume the shower has been turned on and we should trigger the extractor to reduce the humidity. The advantages of this solution are:
 
-- No external sensors in adjacent rooms are required and so we're not suspectable to hardware/network failures.
-- Seasonal ambient humidity changes do not need to be considered (i.e. we wont hardcode activation at `x%` humidity).
-- A trigger value could be much more precisely tuned and the extractor triggered sooner due to not combining the error of two sensors.
+* No external sensors in adjacent rooms are required and so we're not suspectable to hardware/network failures.
+* Seasonal ambient humidity changes do not need to be considered (i.e. we wont hardcode activation at `x%` humidity).
+* A trigger value could be much more precisely tuned and the extractor triggered sooner due to not combining the error of two sensors.
 
 To accurately calculate the rate of humidity change (the derivative), I relocated my sensor to sit above the shower head. This worked in my instance as my shower head is fairly large and so the sensor could be kept dry and out of sight.
+
+| ![Sensor and extractor fan]({{ site.baseurl }}/assets/sensor_above_shower_head.jpg) |
+| Note the sensor hidden above the shower head (it needs a dust!). |
+{:.mbtablestyle}
 
 The logical way to calculate this humidity derivative was to use the [Home Assistant Derivative Helper](https://www.home-assistant.io/integrations/derivative/), as per the manual:
 > The derivative integration creates a sensor that estimates the derivative of the values provided by another sensor (the source sensor). Derivative sensors are updated upon changes of the source sensor.
 
 | ![Relative humidity in a typical day]({{ site.baseurl }}/assets/humidity_over_time.png) |
-|:--:|
-| _The bathroom's relative humidity over a typical day, notice the two spikes when the shower was used._ |
-
+| The bathroom's relative humidity over a typical day, notice the two spikes when the shower was used. |
+{:.mbtablestyle}
 It's implementation as a sensor:
 
 ```yaml
@@ -143,11 +159,12 @@ It's implementation as a sensor:
   time_window: "00:05:00" 
   unit_time: min
 ```
+
 Notice the use of the [`time_window`](https://www.home-assistant.io/integrations/derivative/#time-window) parameter to filter out any noise using a rolling 5 minute average.
 
 | ![Humidity derivative sensor in a typical day]({{ site.baseurl }}/assets/humidity_change.png) |
-|:--:|
-| _The humidity derivative sensor over the same period._ |
+| The humidity derivative sensor over the same period. |
+{:.mbtablestyle}
 
 I combined this with a binary sensor to translate this differential into a binary trigger. This will trigger the extractor when the derivative sensor detects a rate of change greater than 1.5% per minute.
 

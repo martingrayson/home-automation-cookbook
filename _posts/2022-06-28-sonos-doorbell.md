@@ -5,6 +5,18 @@ tags: doorbell homeassistant sonos
 permalink: /sonos-doorbell/
 author: martin-grayson
 ---
+<style>
+  table.mbtablestyle td {
+    border: none;
+    text-align: center;
+    background-color: white;
+    font-style: italic;
+    color: #828282;
+  }
+   table.mbtablestyle {
+    border: none;
+  }
+</style>
 * Do not remove this line (it will not be displayed)
 {:toc}
 
@@ -27,6 +39,10 @@ Just to clarify my setup for those following, I'm using:
 * Sonos Playbar, Play:1 and Play:3
 * Unifi G4 Doorbell
 * Home Assistant OS (previously I ran Supervised on Ubuntu) on an Intel NUC
+
+| ![Unifi G4 Doorbell and Hue Impress outdoor light]({{ site.baseurl }}/assets/doorbell.jpg) |
+| Unifi G4 Doorbell and Hue Impress outdoor light|
+{:.mbtablestyle}
 
 ## Requirements
 
@@ -102,5 +118,4 @@ The YAML for my automation can be found below. Notice the strange `binary_sensor
 ### Limitations
 
 * Going through all those network hops, despite being a local doorbell and not having to hit the cloud, is a little slow. This means sometimes impatient delivery drivers start walking away before you respond to the chime.
-
 * There is quite a lag on casting the doorbell's camera to the Google Home. We're talking 2-5s of latency.
